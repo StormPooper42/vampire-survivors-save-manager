@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:saf/saf.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,7 +62,9 @@ class PermissionHandlerScreenState extends State<PermissionHandlerScreen> {
     ].request();
 
     if (statuses[Permission.storage] != null && statuses[Permission.manageExternalStorage] != null) {
-      if (statuses[Permission.storage]!.isPermanentlyDenied || statuses[Permission.manageExternalStorage]!.isPermanentlyDenied) {
+      if (statuses[Permission.storage]!.isPermanentlyDenied) {
+        await openAppSettings();
+      } else if (statuses[Permission.manageExternalStorage]!.isPermanentlyDenied) {
         await openAppSettings();
       }
     }
@@ -136,6 +139,8 @@ class ExportTabState extends State<ExportTab> {
   @override
   Widget build(BuildContext context) {
     void exportSave() {
+      Saf.getDynamicDirectoryPermission();
+
       final file = File('/storage/emulated/0/Android/data/com.poncle.vampiresurvivors/files/SaveDataUnity.sav');
       if (!file.existsSync()) {
         showDialog(
