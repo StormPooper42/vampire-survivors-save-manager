@@ -1,132 +1,33 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:saf/saf.dart';
+
+import 'app_home.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: AppHome(),
       title: 'Vampire Survivors Save Manager',
       theme: ThemeData(
         primarySwatch: Colors.green,
-      ),
-      home: const PermissionHandlerScreen(),
+      )
     );
   }
 }
 
-class PermissionHandlerScreen extends StatefulWidget {
-  const PermissionHandlerScreen({super.key});
+// devo aggiungere una appbar col titolo
+// il pulsante lo voglio cambiare per renderlo "fisico"
+// aggiungere pulsante per opzioni
+// rimuovere la preview del file
 
-  @override
-  State<PermissionHandlerScreen> createState() => PermissionHandlerScreenState();
-}
-
-class PermissionHandlerScreenState extends State<PermissionHandlerScreen> {
-  @override
-  void initState() {
-    super.initState();
-    permissionServiceCall();
-  }
-
-  permissionServiceCall() async {
-    await permissionServices().then(
-        (value) {
-          if (value[Permission.storage] != null && value[Permission.manageExternalStorage] != null) {
-            if (value[Permission.storage]!.isGranted && value[Permission.manageExternalStorage]!.isGranted) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (ctx) => const HomePage(title: 'Vampire Survivors Save Manager')
-                )
-              );
-            }
-          }
-        }
-    );
-  }
-
-  Future<Map<Permission, PermissionStatus>> permissionServices() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.storage,
-      Permission.manageExternalStorage,
-    ].request();
-
-    if (statuses[Permission.storage] != null && statuses[Permission.manageExternalStorage] != null) {
-      if (statuses[Permission.storage]!.isPermanentlyDenied) {
-        await openAppSettings();
-      } else if (statuses[Permission.manageExternalStorage]!.isPermanentlyDenied) {
-        await openAppSettings();
-      }
-    }
-
-    return statuses;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    permissionServiceCall();
-    return WillPopScope(
-      onWillPop: () async {
-        SystemNavigator.pop();
-        return false;
-      },
-      child: Scaffold(
-        body: Center(
-          child: InkWell(
-            onTap: () {
-              permissionServiceCall();
-            },
-            child: const Text('Click here to enable Enable Permission Screen'),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.download)),
-              Tab(icon: Icon(Icons.upload)),
-              Tab(icon: Icon(Icons.settings)),
-            ],
-          ),
-        ),
-        body: const TabBarView(
-          children: [
-            ExportTab(),
-            ImportTab(),
-            SettingsTab(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ExportTab extends StatefulWidget {
+/*class ExportTab extends StatefulWidget {
   const ExportTab({super.key});
 
   @override
@@ -228,4 +129,4 @@ class SettingsTab extends StatelessWidget {
       ),
     );
   }
-}
+}*/
